@@ -9,12 +9,28 @@ function computerPlay() {
   }
 }
 
-function playRound(e) {
-  const playerSelection = this.id;
-  const computerSelection = computerPlay().toLowerCase();
+function getPlayerResult(playerSelection, computerSelection) {
+  if(playerSelection === "rock" && computerSelection === "paper") {
+    return "lose";
+  } else if(playerSelection === "paper" && computerSelection === "scissors") {
+    return "lose";
+  } else if(playerSelection === "scissors" && computerSelection === "rock") {
+    return "lose";
+  } else if(playerSelection === "paper" && computerSelection === "rock") {
+    return "win";
+  } else if(playerSelection === "scissors" && computerSelection === "paper") {
+    return "win";
+  } else if(playerSelection === "rock" && computerSelection === "scissors") {
+    return "win";
+  } else if(playerSelection === computerSelection) {
+    return "tie";
+  }
+}
+
+function fillSelectionBoxes(playerSelection, computerSelection) {
   const playerBox = document.querySelector('#playerSelection');
   const computerBox = document.querySelector('#computerSelection');
- 
+
   if(playerSelection === 'rock') playerBox.innerHTML = rock;
   else if(playerSelection === 'paper') playerBox.innerHTML = paper;
   else playerBox.innerHTML = scissors;
@@ -22,62 +38,49 @@ function playRound(e) {
   if(computerSelection === 'rock') computerBox.innerHTML = rock;
   else if(computerSelection === 'paper') computerBox.innerHTML = paper;
   else computerBox.innerHTML = scissors;
+}
 
-  playerBox.classList.remove('tie');
-  playerBox.classList.remove('win');
-  playerBox.classList.remove('lose');
-  computerBox.classList.remove('tie');
-  computerBox.classList.remove('win');
-  computerBox.classList.remove('lose');
+function playRound(e) {
+  const playerSelection = this.id;
+  const computerSelection = computerPlay();
+  const playerBox = document.querySelector('#playerSelection');
+  const computerBox = document.querySelector('#computerSelection');
 
-  if(playerSelection === "rock" && computerSelection === "paper") {
-    // p.textContent = "You Lose! Paper beats Rock";
-    computerScore += 1;
-    playerBox.classList.add('lose');
-    computerBox.classList.add('win');
-  } else if(playerSelection === "paper" && computerSelection === "scissors") {
-    // p.textContent = "You Lose! Scissors beats Paper";
-    computerScore += 1;
-    playerBox.classList.add('lose');
-    computerBox.classList.add('win');
-  } else if(playerSelection === "scissors" && computerSelection === "rock") {
-    // p.textContent = "You Lose! Rock beats Scissors";
-    computerScore += 1;
-    playerBox.classList.add('lose');
-    computerBox.classList.add('win');
-  } else if(playerSelection === "paper" && computerSelection === "rock") {
-    // p.textContent = "You Win! Paper beats Rock";
+  let playerResult = getPlayerResult(playerSelection, computerSelection);
+  fillSelectionBoxes(playerSelection, computerSelection);
+
+  if(playerResult === "win") {
     playerScore += 1;
-    playerBox.classList.add('win');
-    computerBox.classList.add('lose');
-  } else if(playerSelection === "scissors" && computerSelection === "paper") {
-    // p.textContent = "You Win! Scissors beats Paper";
-    playerScore += 1;
-    playerBox.classList.add('win');
-    computerBox.classList.add('lose');
-  } else if(playerSelection === "rock" && computerSelection === "scissors") {
-    // p.textContent = "You Win! Rock beats Scissors";
-    playerScore += 1;
-    playerBox.classList.add('win');
-    computerBox.classList.add('lose');
-  } else if(playerSelection === computerSelection) {
-    // p.textContent = "It's a tie!";
-    playerBox.classList.add('tie');
-    computerBox.classList.add('tie');
+  } else if(playerResult === "lose") {
+    computerScore += 1;
+  } else if(playerResult === "tie") {
+  }
+
+  checkAndUpdateScore();
+}
+
+function checkAndUpdateScore() {
+  if(playerScore === 5) {
+    popup[0].classList.toggle('hidden');
+  } else if(computerScore === 5) {
+    popup[1].classList.toggle('hidden');
   }
 
   playerScoreElement.textContent = `Score: ${playerScore}`;
   computerScoreElement.textContent = `Score: ${computerScore}`;
-
-  checkScore();
 }
 
-function checkScore() {
-  if(playerScore === 5) {
-    window.alert('You Win!')
-  } else if(computerScore === 5) {
-    window.alert('Computer Wins!')
+function resetGame(e) {
+  if(this.id === 'winButton') {
+    popup[0].classList.add('hidden');
+  } else {
+    popup[1].classList.add('hidden');
   }
+
+  playerScore = 0;
+  computerScore = 0;
+  playerScoreElement.textContent = `Score: ${playerScore}`;
+  computerScoreElement.textContent = `Score: ${computerScore}`;
 }
 
 const rock = `<svg id="rockIcon" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
@@ -126,13 +129,17 @@ const scissors = `<svg id="scissorIcon" viewBox="0 0 72 72" xmlns="http://www.w3
 </svg>`;
 
 const container = document.querySelector('#container');
-const buttons = document.querySelectorAll('button');
+const buttons = document.querySelectorAll('.gameButton');
 const playerScoreElement = document.querySelector('#playerScore');
 const computerScoreElement = document.querySelector('#computerScore');
+const popup = document.querySelectorAll('.popup');
+const popupButtons = document.querySelectorAll('.popupButton');
 
 let playerScore = Number(playerScoreElement.textContent.split(' ')[1]);
 let computerScore = Number(computerScoreElement.textContent.split(' ')[1]);
 
 buttons.forEach(button => button.addEventListener('click', playRound));
+popupButtons.forEach(button => button.addEventListener('click', resetGame));
+
 
 //module.exports = playRound;
