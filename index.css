@@ -27,6 +27,10 @@ button {
     transform: scale(1.2);
 }
 
+.gameButton:active svg {
+    transform: scale(0.5);
+}
+
 .popupButton {
     width: 200px;
     height: 100px;
@@ -41,6 +45,10 @@ button {
 .popupButton:hover {
     background-color: white;
     color: #0F1218;
+}
+
+.popupButton:active {
+    transform: scale(0.5);
 }
 
 .box {
