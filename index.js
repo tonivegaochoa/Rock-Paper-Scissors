@@ -1,59 +1,52 @@
 function computerPlay() {
   const choice = Math.round(Math.random() * 10) % 3;
-  if(choice === 0) {
-    return "rock";
-  } else if(choice === 1) {
-    return "paper";
-  } else {
-    return "scissors";
-  }
+  return choice;
 }
 
 function getPlayerResult(playerSelection, computerSelection) {
-  if(playerSelection === "rock" && computerSelection === "paper") {
-    return "lose";
-  } else if(playerSelection === "paper" && computerSelection === "scissors") {
-    return "lose";
-  } else if(playerSelection === "scissors" && computerSelection === "rock") {
-    return "lose";
-  } else if(playerSelection === "paper" && computerSelection === "rock") {
-    return "win";
-  } else if(playerSelection === "scissors" && computerSelection === "paper") {
-    return "win";
-  } else if(playerSelection === "rock" && computerSelection === "scissors") {
+  // [rock, paper, scissors]
+  // move to the right gets beaten by move to left
+  // paper(1) beats rock (0), scissors(2) beats paper(1), rock(0) beats scissors(2) 
+  if(playerSelection === computerSelection+1 || playerSelection === 0 && computerSelection === 2) {
     return "win";
   } else if(playerSelection === computerSelection) {
     return "tie";
+  } else {
+    return "lose";
   }
 }
 
 function fillSelectionBoxes(playerSelection, computerSelection) {
-  const playerBox = document.querySelector('#playerSelection');
-  const computerBox = document.querySelector('#computerSelection');
-
-  if(playerSelection === 'rock') playerBox.innerHTML = rock;
-  else if(playerSelection === 'paper') playerBox.innerHTML = paper;
+  if(playerSelection === 0) playerBox.innerHTML = rock;
+  else if(playerSelection === 1) playerBox.innerHTML = paper;
   else playerBox.innerHTML = scissors;
 
-  if(computerSelection === 'rock') computerBox.innerHTML = rock;
-  else if(computerSelection === 'paper') computerBox.innerHTML = paper;
+  if(computerSelection === 0) computerBox.innerHTML = rock;
+  else if(computerSelection === 1) computerBox.innerHTML = paper;
   else computerBox.innerHTML = scissors;
 }
 
 function playRound(e) {
-  const playerSelection = this.id;
+  const playerSelection = Number(this.id);
   const computerSelection = computerPlay();
-  const playerBox = document.querySelector('#playerSelection');
-  const computerBox = document.querySelector('#computerSelection');
-
   let playerResult = getPlayerResult(playerSelection, computerSelection);
+
   fillSelectionBoxes(playerSelection, computerSelection);
+
+  playerBox.classList.remove('win', 'lose', 'tie');
+  computerBox.classList.remove('win', 'lose', 'tie');
 
   if(playerResult === "win") {
     playerScore += 1;
+    playerBox.classList.add('win');
+    computerBox.classList.add('lose');
   } else if(playerResult === "lose") {
     computerScore += 1;
+    playerBox.classList.add('lose');
+    computerBox.classList.add('win');
   } else if(playerResult === "tie") {
+    playerBox.classList.add('tie');
+    computerBox.classList.add('tie');
   }
 
   checkAndUpdateScore();
@@ -77,8 +70,14 @@ function resetGame(e) {
     popup[1].classList.add('hidden');
   }
 
+  playerBox.classList.remove('win', 'lose', 'tie');
+  computerBox.classList.remove('win', 'lose', 'tie');
+
   playerScore = 0;
   computerScore = 0;
+  playerBox.removeChild(playerBox.firstChild);
+  computerBox.removeChild(computerBox.firstChild);
+
   playerScoreElement.textContent = `Score: ${playerScore}`;
   computerScoreElement.textContent = `Score: ${computerScore}`;
 }
@@ -132,6 +131,8 @@ const container = document.querySelector('#container');
 const buttons = document.querySelectorAll('.gameButton');
 const playerScoreElement = document.querySelector('#playerScore');
 const computerScoreElement = document.querySelector('#computerScore');
+const playerBox = document.querySelector('#playerSelection');
+const computerBox = document.querySelector('#computerSelection');
 const popup = document.querySelectorAll('.popup');
 const popupButtons = document.querySelectorAll('.popupButton');
 
@@ -141,5 +142,4 @@ let computerScore = Number(computerScoreElement.textContent.split(' ')[1]);
 buttons.forEach(button => button.addEventListener('click', playRound));
 popupButtons.forEach(button => button.addEventListener('click', resetGame));
 
-
-//module.exports = playRound;
+//module.exports = getPlayerResult;
